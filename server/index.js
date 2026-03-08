@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import geoip from 'geoip-lite';
 
 const app = express();
 const port = process.env.PORT || 8443;
@@ -31,14 +32,63 @@ function safeBody(body) {
   return body;
 }
 
+function normalizeIp(ipValue) {
+  if (!ipValue || typeof ipValue !== 'string') {
+    return null;
+  }
+
+  const firstIp = ipValue.split(',')[0]?.trim() || null;
+  if (!firstIp) {
+    return null;
+  }
+
+  if (firstIp.startsWith('::ffff:')) {
+    return firstIp.replace('::ffff:', '');
+  }
+
+  return firstIp;
+}
+
+function getGeoByIp(ipValue) {
+  const ip = normalizeIp(ipValue);
+  if (!ip) {
+    return null;
+  }
+
+  const geo = geoip.lookup(ip);
+  if (!geo) {
+    return {
+      ip,
+      country: null,
+      region: null,
+      city: null,
+      timezone: null,
+      ll: null
+    };
+  }
+
+  return {
+    ip,
+    country: geo.country || null,
+    region: geo.region || null,
+    city: geo.city || null,
+    timezone: geo.timezone || null,
+    ll: geo.ll || null
+  };
+}
+
 app.use((req, res, next) => {
   const start = Date.now();
+  const forwardedFor = req.headers['x-forwarded-for'] || null;
+
   const reqSnapshot = {
     method: req.method,
     path: req.originalUrl,
     httpVersion: req.httpVersion,
     ip: req.ip,
-    forwardedFor: req.headers['x-forwarded-for'] || null,
+    ipGeo: getGeoByIp(req.ip),
+    forwardedFor,
+    forwardedForGeo: getGeoByIp(forwardedFor),
     headers: req.headers,
     query: req.query,
     cookies: req.cookies,
@@ -82,7 +132,10 @@ app.all('/api/echo', (req, res) => {
       query: req.query,
       body: req.body,
       cookies: req.cookies,
-      ip: req.ip
+      ip: req.ip,
+      ipGeo: getGeoByIp(req.ip),
+      forwardedFor: req.headers['x-forwarded-for'] || null,
+      forwardedForGeo: getGeoByIp(req.headers['x-forwarded-for'] || null)
     }
   });
 });

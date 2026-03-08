@@ -2,7 +2,7 @@
 
 เว็บแอปนี้แสดง HTTP Request/Response แบบ real-time โดยรองรับข้อมูล:
 - Request method/path/http version
-- Source IP (`req.ip`) และ `x-forwarded-for`
+- Source IP (`req.ip`) และ `x-forwarded-for` พร้อม Geo lookup (country/region/city/timezone)
 - Headers, query params, body, cookies
 - Response status, headers, body และ response duration
 
