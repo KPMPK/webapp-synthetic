@@ -4,6 +4,10 @@ import { io } from 'socket.io-client';
 const socket = io({ transports: ['websocket'] });
 const RECENT_EVENTS_LIMIT = 200;
 
+function resolveCity(event) {
+  return event.request?.forwardedForGeo?.city || event.request?.ipGeo?.city || 'Unknown';
+}
+
 function App() {
   const [events, setEvents] = useState([]);
   const [totalCaptured, setTotalCaptured] = useState(0);
@@ -25,7 +29,17 @@ function App() {
       return acc;
     }, {});
 
-    return { byStatus };
+    const byCity = events.reduce((acc, event) => {
+      const city = resolveCity(event);
+      acc[city] = (acc[city] || 0) + 1;
+      return acc;
+    }, {});
+
+    const topCities = Object.entries(byCity)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8);
+
+    return { byStatus, topCities };
   }, [events]);
 
   return (
@@ -52,6 +66,21 @@ function App() {
         <div className="stat-card">
           <span className="label">Response statuses (recent {RECENT_EVENTS_LIMIT})</span>
           <strong>{Object.entries(stats.byStatus).map(([k, v]) => `${k}: ${v}`).join(' • ') || 'No data yet'}</strong>
+        </div>
+        <div className="stat-card">
+          <span className="label">Top cities (recent {RECENT_EVENTS_LIMIT})</span>
+          {stats.topCities.length === 0 ? (
+            <strong>No city data yet</strong>
+          ) : (
+            <ul className="city-list">
+              {stats.topCities.map(([city, count]) => (
+                <li key={city}>
+                  <span>{city}</span>
+                  <strong>{count}</strong>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
