@@ -30,6 +30,14 @@ Run container on port 8443:
 docker run --rm -p 8443:8443 http-inspector
 ```
 
+ตั้งค่า IP ที่ต้องการ block ได้ผ่าน ENV `BLOCKED_IPS` (คั่นหลายค่าแบบ comma):
+
+```bash
+docker run --rm -p 8443:8443 -e BLOCKED_IPS="203.0.113.10,198.51.100.25" http-inspector
+```
+
+เมื่อ request มาจาก IP ที่อยู่ในรายการ block (พิจารณาทั้ง `req.ip` และ `x-forwarded-for`) ระบบจะตอบกลับ `403 Forbidden` ทันที
+
 จากนั้นเปิด `http://localhost:8443` และลองยิง request ไปที่:
 - `GET /api/health`
 - `POST /api/echo`

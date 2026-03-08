@@ -9,6 +9,7 @@ import geoip from 'geoip-lite';
 
 const app = express();
 const port = process.env.PORT || 8443;
+const blockedIpsEnv = process.env.BLOCKED_IPS || '';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -49,6 +50,26 @@ function normalizeIp(ipValue) {
   return firstIp;
 }
 
+function getForwardedIpList(forwardedForHeader) {
+  if (!forwardedForHeader || typeof forwardedForHeader !== 'string') {
+    return [];
+  }
+
+  return forwardedForHeader
+    .split(',')
+    .map((ip) => normalizeIp(ip))
+    .filter(Boolean);
+}
+
+function getBlockedIpSet(rawBlockedIps) {
+  return new Set(
+    rawBlockedIps
+      .split(',')
+      .map((ip) => normalizeIp(ip))
+      .filter(Boolean)
+  );
+}
+
 function getGeoByIp(ipValue) {
   const ip = normalizeIp(ipValue);
   if (!ip) {
@@ -77,9 +98,14 @@ function getGeoByIp(ipValue) {
   };
 }
 
+const blockedIpSet = getBlockedIpSet(blockedIpsEnv);
+
 app.use((req, res, next) => {
   const start = Date.now();
   const forwardedFor = req.headers['x-forwarded-for'] || null;
+  const normalizedIp = normalizeIp(req.ip);
+  const forwardedIps = getForwardedIpList(forwardedFor);
+  const blockedSourceIp = [normalizedIp, ...forwardedIps].find((ip) => blockedIpSet.has(ip)) || null;
 
   const reqSnapshot = {
     method: req.method,
@@ -92,7 +118,8 @@ app.use((req, res, next) => {
     headers: req.headers,
     query: req.query,
     cookies: req.cookies,
-    body: safeBody(req.body)
+    body: safeBody(req.body),
+    blockedSourceIp
   };
 
   let responseBody;
@@ -116,7 +143,14 @@ app.use((req, res, next) => {
     });
   });
 
-  next();
+  if (blockedSourceIp) {
+    return res.status(403).json({
+      error: 'Request denied by IP policy',
+      blockedSourceIp
+    });
+  }
+
+  return next();
 });
 
 app.get('/api/health', (req, res) => {
@@ -148,4 +182,9 @@ app.get('*', (req, res) => {
 
 server.listen(port, '0.0.0.0', () => {
   console.log(`HTTP inspector app running on port ${port}`);
+  console.log(
+    blockedIpSet.size > 0
+      ? `Blocked IP policy is active for: ${Array.from(blockedIpSet).join(', ')}`
+      : 'Blocked IP policy is not set (BLOCKED_IPS is empty).'
+  );
 });
