@@ -2,13 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const socket = io({ transports: ['websocket'] });
+const RECENT_EVENTS_LIMIT = 200;
 
 function App() {
   const [events, setEvents] = useState([]);
+  const [totalCaptured, setTotalCaptured] = useState(0);
 
   useEffect(() => {
     socket.on('http-event', (event) => {
-      setEvents((prev) => [event, ...prev].slice(0, 200));
+      setTotalCaptured((prev) => prev + 1);
+      setEvents((prev) => [event, ...prev].slice(0, RECENT_EVENTS_LIMIT));
     });
 
     return () => {
@@ -17,13 +20,12 @@ function App() {
   }, []);
 
   const stats = useMemo(() => {
-    const total = events.length;
     const byStatus = events.reduce((acc, e) => {
       acc[e.response.statusCode] = (acc[e.response.statusCode] || 0) + 1;
       return acc;
     }, {});
 
-    return { total, byStatus };
+    return { byStatus };
   }, [events]);
 
   return (
@@ -38,11 +40,17 @@ function App() {
 
       <section className="stats">
         <div className="stat-card">
-          <span className="label">Total captured</span>
-          <strong>{stats.total}</strong>
+          <span className="label">Total captured (all time)</span>
+          <strong>{totalCaptured}</strong>
         </div>
         <div className="stat-card">
-          <span className="label">Response statuses</span>
+          <span className="label">Showing recent events</span>
+          <strong>
+            {events.length} / {RECENT_EVENTS_LIMIT}
+          </strong>
+        </div>
+        <div className="stat-card">
+          <span className="label">Response statuses (recent {RECENT_EVENTS_LIMIT})</span>
           <strong>{Object.entries(stats.byStatus).map(([k, v]) => `${k}: ${v}`).join(' • ') || 'No data yet'}</strong>
         </div>
       </section>
