@@ -8,7 +8,39 @@ function resolveCity(event) {
   return event.request?.forwardedForGeo?.city || event.request?.ipGeo?.city || 'Unknown';
 }
 
-function App() {
+function EcomMockPage() {
+  return (
+    <main className="container">
+      <header className="shop-hero">
+        <nav className="top-nav">
+          <strong>ShopWave</strong>
+          <a href="/status">Open HTTP Inspector</a>
+        </nav>
+        <h1>Summer Tech Deals</h1>
+        <p>Mockup หน้า e-commerce สำหรับเดโม่หน้าแรกของระบบ</p>
+      </header>
+
+      <section className="products">
+        {[
+          { name: 'Wireless Earbuds', price: '฿1,290', tag: 'Best Seller' },
+          { name: 'Smart Watch Pro', price: '฿2,990', tag: 'New' },
+          { name: 'Mechanical Keyboard', price: '฿1,890', tag: 'Hot' },
+          { name: '4K Action Camera', price: '฿3,490', tag: 'Flash Sale' }
+        ].map((item) => (
+          <article className="product-card" key={item.name}>
+            <div className="thumb" />
+            <span className="tag">{item.tag}</span>
+            <h3>{item.name}</h3>
+            <p className="price">{item.price}</p>
+            <button type="button">Add to cart</button>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+function InspectorPage() {
   const [events, setEvents] = useState([]);
   const [totalCaptured, setTotalCaptured] = useState(0);
 
@@ -45,6 +77,10 @@ function App() {
   return (
     <main className="container">
       <header className="header">
+        <nav className="top-nav">
+          <strong>HTTP Inspector</strong>
+          <a href="/">Go to e-commerce mockup</a>
+        </nav>
         <h1>Real-Time HTTP Request/Response Inspector</h1>
         <p>
           Monitor live traffic with headers, body, cookies, source IP, response metadata,
@@ -113,6 +149,14 @@ function App() {
       </section>
     </main>
   );
+}
+
+function App() {
+  const path = window.location.pathname;
+  if (path === '/status') {
+    return <InspectorPage />;
+  }
+  return <EcomMockPage />;
 }
 
 export default App;

@@ -43,3 +43,9 @@ docker run --rm -p 8443:8443 -e BLOCKED_IPS="203.0.113.10,198.51.100.25" http-in
 - `POST /api/echo`
 
 ทุก request/response ที่เข้ามาในแอปจะถูกส่งขึ้นหน้าจอแบบ real-time ผ่าน Socket.IO
+
+
+## Routes
+
+- `/` หน้า mockup e-commerce
+- `/status` หน้า real-time HTTP inspector
