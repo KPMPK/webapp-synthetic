@@ -9,29 +9,59 @@ function resolveCity(event) {
 }
 
 function EcomMockPage() {
+  const products = [
+    { name: 'HackBox X17 Gaming Laptop', price: '฿39,900', oldPrice: '฿45,900', badge: 'HOT DEAL' },
+    { name: 'Stealth Pro RGB Keyboard', price: '฿2,490', oldPrice: '฿3,190', badge: 'FLASH' },
+    { name: 'NovaPulse 240Hz Monitor', price: '฿8,990', oldPrice: '฿10,990', badge: 'NEW' },
+    { name: 'Phantom Wireless Mouse', price: '฿1,290', oldPrice: '฿1,790', badge: 'BEST SELLER' }
+  ];
+
   return (
-    <main className="container">
+    <main className="container hackazon-page">
       <header className="shop-hero">
         <nav className="top-nav">
-          <strong>ShopWave</strong>
-          <a href="/status">Open HTTP Inspector</a>
+          <strong className="brand">HACKAZON</strong>
+          <div className="hero-actions">
+            <a href="#deals">Today Deals</a>
+            <a href="/status">Open HTTP Inspector</a>
+          </div>
         </nav>
-        <h1>Summer Tech Deals</h1>
-        <p>Mockup หน้า e-commerce สำหรับเดโม่หน้าแรกของระบบ</p>
+
+        <div className="hero-grid">
+          <div>
+            <span className="pill">UP TO 70% OFF</span>
+            <h1>Level Up Your Setup</h1>
+            <p>Mockup หน้า e-commerce สไตล์ Hackazon สำหรับหน้าแรก พร้อมโปรโมชั่นและสินค้าเด่น</p>
+            <div className="cta-row">
+              <button type="button">Shop Now</button>
+              <button type="button" className="ghost-btn">View Collection</button>
+            </div>
+          </div>
+          <aside className="hero-side-card" id="deals">
+            <h3>Lightning Deals</h3>
+            <p>Gaming Chair X-Pro</p>
+            <strong>฿5,490</strong>
+            <small>เหลือเวลา 03:12:45</small>
+          </aside>
+        </div>
       </header>
 
+      <section className="category-row">
+        {['Gaming', 'Laptop', 'Accessories', 'Audio', 'Streaming', 'Smart Home'].map((cat) => (
+          <span key={cat} className="category-chip">{cat}</span>
+        ))}
+      </section>
+
       <section className="products">
-        {[
-          { name: 'Wireless Earbuds', price: '฿1,290', tag: 'Best Seller' },
-          { name: 'Smart Watch Pro', price: '฿2,990', tag: 'New' },
-          { name: 'Mechanical Keyboard', price: '฿1,890', tag: 'Hot' },
-          { name: '4K Action Camera', price: '฿3,490', tag: 'Flash Sale' }
-        ].map((item) => (
+        {products.map((item) => (
           <article className="product-card" key={item.name}>
             <div className="thumb" />
-            <span className="tag">{item.tag}</span>
+            <div className="product-top">
+              <span className="tag">{item.badge}</span>
+              <span className="rating">★ 4.8</span>
+            </div>
             <h3>{item.name}</h3>
-            <p className="price">{item.price}</p>
+            <p className="price">{item.price} <small>{item.oldPrice}</small></p>
             <button type="button">Add to cart</button>
           </article>
         ))}
