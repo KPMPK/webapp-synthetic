@@ -136,7 +136,9 @@ body {
 .thumb {
   height: 120px;
   border-radius: 0.5rem;
-  background: linear-gradient(135deg, #1d4ed8, #7c3aed 60%, #f43f5e);
+  width: 100%;
+  object-fit: cover;
+  display: block;
   margin-bottom: 0.6rem;
 }
 

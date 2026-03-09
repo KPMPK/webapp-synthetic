@@ -10,17 +10,41 @@ function resolveCity(event) {
 
 function EcomMockPage() {
   const products = [
-    { name: 'HackBox X17 Gaming Laptop', price: '฿39,900', oldPrice: '฿45,900', badge: 'HOT DEAL' },
-    { name: 'Stealth Pro RGB Keyboard', price: '฿2,490', oldPrice: '฿3,190', badge: 'FLASH' },
-    { name: 'NovaPulse 240Hz Monitor', price: '฿8,990', oldPrice: '฿10,990', badge: 'NEW' },
-    { name: 'Phantom Wireless Mouse', price: '฿1,290', oldPrice: '฿1,790', badge: 'BEST SELLER' }
+    {
+      name: 'E-Shop X17 Gaming Laptop',
+      price: '฿39,900',
+      oldPrice: '฿45,900',
+      badge: 'HOT DEAL',
+      image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      name: 'RGB Mechanical Keyboard',
+      price: '฿2,490',
+      oldPrice: '฿3,190',
+      badge: 'FLASH',
+      image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      name: '240Hz Gaming Monitor',
+      price: '฿8,990',
+      oldPrice: '฿10,990',
+      badge: 'NEW',
+      image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      name: 'Wireless Gaming Mouse',
+      price: '฿1,290',
+      oldPrice: '฿1,790',
+      badge: 'BEST SELLER',
+      image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=900&q=80'
+    }
   ];
 
   return (
-    <main className="container hackazon-page">
+    <main className="container">
       <header className="shop-hero">
         <nav className="top-nav">
-          <strong className="brand">HACKAZON</strong>
+          <strong className="brand">E-SHOP</strong>
           <div className="hero-actions">
             <a href="#deals">Today Deals</a>
             <a href="/status">Open HTTP Inspector</a>
@@ -31,7 +55,6 @@ function EcomMockPage() {
           <div>
             <span className="pill">UP TO 70% OFF</span>
             <h1>Level Up Your Setup</h1>
-            <p>Mockup หน้า e-commerce สไตล์ Hackazon สำหรับหน้าแรก พร้อมโปรโมชั่นและสินค้าเด่น</p>
             <div className="cta-row">
               <button type="button">Shop Now</button>
               <button type="button" className="ghost-btn">View Collection</button>
@@ -55,7 +78,7 @@ function EcomMockPage() {
       <section className="products">
         {products.map((item) => (
           <article className="product-card" key={item.name}>
-            <div className="thumb" />
+            <img className="thumb" src={item.image} alt={item.name} loading="lazy" />
             <div className="product-top">
               <span className="tag">{item.badge}</span>
               <span className="rating">★ 4.8</span>
