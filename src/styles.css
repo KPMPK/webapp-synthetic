@@ -388,3 +388,12 @@ pre {
   min-width: 56px;
   text-align: left;
 }
+
+.country-slide-toggle.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.country-slide-toggle.disabled .toggle-track {
+  background: #64748b;
+}

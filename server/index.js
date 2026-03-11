@@ -117,10 +117,14 @@ function pushEvent(httpEvent) {
 }
 
 app.get('/api/events', (req, res) => {
+  const { sourceGeo } = getSourceGeo(req);
+  const requesterCountry = normalizeCountryCode(sourceGeo?.country);
+
   res.json({
     totalCaptured,
     events: recentEvents,
-    blockedCountries: Array.from(blockedCountrySet)
+    blockedCountries: Array.from(blockedCountrySet),
+    requesterCountry
   });
 });
 
@@ -131,9 +135,18 @@ app.get('/api/block-countries', (req, res) => {
 app.post('/api/block-countries', (req, res) => {
   const countryCode = normalizeCountryCode(req.body?.countryCode);
   const shouldBlock = Boolean(req.body?.blocked);
+  const { sourceGeo } = getSourceGeo(req);
+  const requesterCountry = normalizeCountryCode(sourceGeo?.country);
 
   if (!countryCode) {
     return res.status(400).json({ error: 'countryCode must be a 2-letter code' });
+  }
+
+  if (shouldBlock && requesterCountry && countryCode === requesterCountry) {
+    return res.status(400).json({
+      error: 'You cannot block your own requester country',
+      requesterCountry
+    });
   }
 
   if (shouldBlock) {

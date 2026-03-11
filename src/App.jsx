@@ -101,6 +101,7 @@ function InspectorPage() {
   const [events, setEvents] = useState([]);
   const [totalCaptured, setTotalCaptured] = useState(0);
   const [blockedCountries, setBlockedCountries] = useState([]);
+  const [requesterCountry, setRequesterCountry] = useState(null);
 
   useEffect(() => {
     fetch('/api/events')
@@ -109,11 +110,13 @@ function InspectorPage() {
         setEvents(data.events || []);
         setTotalCaptured(data.totalCaptured || 0);
         setBlockedCountries(data.blockedCountries || []);
+        setRequesterCountry(data.requesterCountry || null);
       })
       .catch(() => {
         setEvents([]);
         setTotalCaptured(0);
         setBlockedCountries([]);
+        setRequesterCountry(null);
       });
 
     socket.on('http-event', (event) => {
@@ -141,7 +144,11 @@ function InspectorPage() {
     if (res.ok) {
       const data = await res.json();
       setBlockedCountries(data.blockedCountries || []);
+      return;
     }
+
+    const errorData = await res.json().catch(() => ({}));
+    console.warn(errorData.error || 'Failed to update country policy');
   };
 
   const stats = useMemo(() => {
@@ -230,22 +237,29 @@ function InspectorPage() {
 
       <section className="country-policy-card">
         <h2>Country Block Policy (GUI)</h2>
-        <p>Use Allow/Block buttons to control country access from the status page.</p>
+        <p>Use the slide toggle to allow or block country access from this page.</p>
         <div className="country-policy-grid">
           {policyCountries.length === 0 ? (
             <span className="empty-inline">No country data yet</span>
           ) : (
             policyCountries.map((country) => {
               const isBlocked = blockedCountries.includes(country);
+              const isRequesterCountry = requesterCountry === country;
+              const cannotBlockSelf = isRequesterCountry && !isBlocked;
               return (
                 <div key={country} className="country-policy-row">
-                  <span className="country-label">{country}</span>
+                  <span className="country-label">
+                    {country}
+                    {isRequesterCountry ? ' (You)' : ''}
+                  </span>
                   <button
                     type="button"
-                    className={`country-slide-toggle ${isBlocked ? 'blocked' : 'allowed'}`}
+                    className={`country-slide-toggle ${isBlocked ? 'blocked' : 'allowed'} ${cannotBlockSelf ? 'disabled' : ''}`}
                     onClick={() => setCountryPolicy(country, !isBlocked)}
                     aria-pressed={isBlocked}
                     aria-label={`${country} is ${isBlocked ? 'blocked' : 'allowed'}`}
+                    disabled={cannotBlockSelf}
+                    title={cannotBlockSelf ? 'You cannot block your own requester country.' : ''}
                   >
                     <span className="toggle-track">
                       <span className="toggle-thumb" />

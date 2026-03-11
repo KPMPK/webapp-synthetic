@@ -30,7 +30,7 @@ Run container on port 8443:
 docker run --rm -p 8443:8443 http-inspector
 ```
 
-On `/status`, you can always use visible **Allow** and **Block** buttons to manage country access directly from the GUI.
+On `/status`, you can manage country access with slide toggles, and the app prevents blocking your own requester country.
 
 จากนั้นเปิด `http://localhost:8443` และลองยิง request ไปที่:
 - `GET /api/health`
