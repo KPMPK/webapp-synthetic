@@ -12,6 +12,9 @@ const port = process.env.PORT || 8443;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const blockedCountrySet = new Set();
+const recentEvents = [];
+const MAX_RECENT_EVENTS = 200;
+let totalCaptured = 0;
 
 app.set('trust proxy', true);
 app.use(cors());
@@ -105,6 +108,22 @@ function emitCountryPolicyUpdate() {
   });
 }
 
+function pushEvent(httpEvent) {
+  totalCaptured += 1;
+  recentEvents.unshift(httpEvent);
+  if (recentEvents.length > MAX_RECENT_EVENTS) {
+    recentEvents.length = MAX_RECENT_EVENTS;
+  }
+}
+
+app.get('/api/events', (req, res) => {
+  res.json({
+    totalCaptured,
+    events: recentEvents,
+    blockedCountries: Array.from(blockedCountrySet)
+  });
+});
+
 app.get('/api/block-countries', (req, res) => {
   res.json({ blockedCountries: Array.from(blockedCountrySet) });
 });
@@ -157,7 +176,7 @@ app.use((req, res, next) => {
   };
 
   res.on('finish', () => {
-    io.emit('http-event', {
+    const httpEvent = {
       id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
       timestamp: new Date().toISOString(),
       request: reqSnapshot,
@@ -167,7 +186,10 @@ app.use((req, res, next) => {
         body: responseBody ?? null,
         durationMs: Date.now() - start
       }
-    });
+    };
+
+    pushEvent(httpEvent);
+    io.emit('http-event', httpEvent);
   });
 
   const isCountryPolicyEndpoint = req.path.startsWith('/api/block-countries');

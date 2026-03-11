@@ -30,7 +30,7 @@ Run container on port 8443:
 docker run --rm -p 8443:8443 http-inspector
 ```
 
-หน้า `/status` สามารถกดปุ่มจาก GUI เพื่อ block/unblock ประเทศได้โดยตรง (อิงจาก country code ที่พบใน traffic ล่าสุด)
+On `/status`, you can always use visible **Allow** and **Block** buttons to manage country access directly from the GUI.
 
 จากนั้นเปิด `http://localhost:8443` และลองยิง request ไปที่:
 - `GET /api/health`

@@ -313,22 +313,48 @@ pre {
   color: #94a3b8;
 }
 
-.country-buttons {
-  display: flex;
-  flex-wrap: wrap;
+
+
+.country-policy-grid {
+  display: grid;
   gap: 0.5rem;
 }
 
+.country-policy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border: 1px solid #1e293b;
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.country-label {
+  font-weight: 700;
+}
+
+.country-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
 .country-btn {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.6rem;
+  opacity: 0.72;
 }
 
-.country-btn.allowed {
-  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+.country-btn.active {
+  opacity: 1;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
 }
 
-.country-btn.blocked {
+.allow-btn {
+  background: linear-gradient(90deg, #059669, #16a34a);
+}
+
+.block-btn {
   background: linear-gradient(90deg, #dc2626, #b91c1c);
 }
 

@@ -68,7 +68,7 @@ function EcomMockPage() {
             <h3>Lightning Deals</h3>
             <p>Gaming Chair X-Pro</p>
             <strong>฿5,490</strong>
-            <small>เหลือเวลา 03:12:45</small>
+            <small>Time left 03:12:45</small>
           </aside>
         </div>
       </header>
@@ -103,10 +103,18 @@ function InspectorPage() {
   const [blockedCountries, setBlockedCountries] = useState([]);
 
   useEffect(() => {
-    fetch('/api/block-countries')
+    fetch('/api/events')
       .then((res) => res.json())
-      .then((data) => setBlockedCountries(data.blockedCountries || []))
-      .catch(() => setBlockedCountries([]));
+      .then((data) => {
+        setEvents(data.events || []);
+        setTotalCaptured(data.totalCaptured || 0);
+        setBlockedCountries(data.blockedCountries || []);
+      })
+      .catch(() => {
+        setEvents([]);
+        setTotalCaptured(0);
+        setBlockedCountries([]);
+      });
 
     socket.on('http-event', (event) => {
       setTotalCaptured((prev) => prev + 1);
@@ -123,8 +131,7 @@ function InspectorPage() {
     };
   }, []);
 
-  const toggleCountryBlock = async (countryCode) => {
-    const blocked = !blockedCountries.includes(countryCode);
+  const setCountryPolicy = async (countryCode, blocked) => {
     const res = await fetch('/api/block-countries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -168,6 +175,12 @@ function InspectorPage() {
 
     return { byStatus, topCities, topCountries };
   }, [events]);
+
+  const policyCountries = useMemo(() => {
+    const seen = new Set(stats.topCountries.map(([country]) => country));
+    blockedCountries.forEach((country) => seen.add(country));
+    return Array.from(seen);
+  }, [stats.topCountries, blockedCountries]);
 
   return (
     <main className="container">
@@ -216,23 +229,34 @@ function InspectorPage() {
       </section>
 
       <section className="country-policy-card">
-        <h2>Country Block Policy (from GUI)</h2>
-        <p>กดปุ่มเพื่อ block/unblock ประเทศจากข้อมูลที่ตรวจพบล่าสุด</p>
-        <div className="country-buttons">
-          {stats.topCountries.length === 0 ? (
+        <h2>Country Block Policy (GUI)</h2>
+        <p>Use Allow/Block buttons to control country access from the status page.</p>
+        <div className="country-policy-grid">
+          {policyCountries.length === 0 ? (
             <span className="empty-inline">No country data yet</span>
           ) : (
-            stats.topCountries.map(([country, count]) => {
+            policyCountries.map((country) => {
               const isBlocked = blockedCountries.includes(country);
               return (
-                <button
-                  key={country}
-                  type="button"
-                  className={`country-btn ${isBlocked ? 'blocked' : 'allowed'}`}
-                  onClick={() => toggleCountryBlock(country)}
-                >
-                  {country} ({count}) • {isBlocked ? 'Blocked' : 'Allowed'}
-                </button>
+                <div key={country} className="country-policy-row">
+                  <span className="country-label">{country}</span>
+                  <div className="country-actions">
+                    <button
+                      type="button"
+                      className={`country-btn allow-btn ${!isBlocked ? 'active' : ''}`}
+                      onClick={() => setCountryPolicy(country, false)}
+                    >
+                      Allow
+                    </button>
+                    <button
+                      type="button"
+                      className={`country-btn block-btn ${isBlocked ? 'active' : ''}`}
+                      onClick={() => setCountryPolicy(country, true)}
+                    >
+                      Block
+                    </button>
+                  </div>
+                </div>
               );
             })
           )}
