@@ -334,30 +334,19 @@ pre {
   font-weight: 700;
 }
 
-.country-actions {
-  display: flex;
-  gap: 0.45rem;
+.empty-inline {
+  color: #94a3b8;
 }
 
-.country-btn {
+.country-toggle-btn {
   font-size: 0.82rem;
-  padding: 0.35rem 0.6rem;
-  opacity: 0.72;
+  padding: 0.35rem 0.7rem;
 }
 
-.country-btn.active {
-  opacity: 1;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
-}
-
-.allow-btn {
+.country-toggle-btn.allowed {
   background: linear-gradient(90deg, #059669, #16a34a);
 }
 
-.block-btn {
+.country-toggle-btn.blocked {
   background: linear-gradient(90deg, #dc2626, #b91c1c);
-}
-
-.empty-inline {
-  color: #94a3b8;
 }

@@ -240,22 +240,14 @@ function InspectorPage() {
               return (
                 <div key={country} className="country-policy-row">
                   <span className="country-label">{country}</span>
-                  <div className="country-actions">
-                    <button
-                      type="button"
-                      className={`country-btn allow-btn ${!isBlocked ? 'active' : ''}`}
-                      onClick={() => setCountryPolicy(country, false)}
-                    >
-                      Allow
-                    </button>
-                    <button
-                      type="button"
-                      className={`country-btn block-btn ${isBlocked ? 'active' : ''}`}
-                      onClick={() => setCountryPolicy(country, true)}
-                    >
-                      Block
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className={`country-toggle-btn ${isBlocked ? 'blocked' : 'allowed'}`}
+                    onClick={() => setCountryPolicy(country, !isBlocked)}
+                    aria-pressed={isBlocked}
+                  >
+                    {isBlocked ? 'Blocked' : 'Allowed'}
+                  </button>
                 </div>
               );
             })
