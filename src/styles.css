@@ -338,15 +338,53 @@ pre {
   color: #94a3b8;
 }
 
-.country-toggle-btn {
+
+
+.country-slide-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.82rem;
-  padding: 0.35rem 0.7rem;
+  padding: 0.3rem 0.5rem;
+  background: transparent;
+  border: 1px solid #334155;
+  border-radius: 999px;
 }
 
-.country-toggle-btn.allowed {
-  background: linear-gradient(90deg, #059669, #16a34a);
+.toggle-track {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #334155;
+  position: relative;
+  transition: background 0.2s ease;
 }
 
-.country-toggle-btn.blocked {
-  background: linear-gradient(90deg, #dc2626, #b91c1c);
+.toggle-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s ease;
+}
+
+.country-slide-toggle.allowed .toggle-track {
+  background: #16a34a;
+}
+
+.country-slide-toggle.blocked .toggle-track {
+  background: #dc2626;
+}
+
+.country-slide-toggle.blocked .toggle-thumb {
+  left: 21px;
+}
+
+.toggle-text {
+  color: #e2e8f0;
+  min-width: 56px;
+  text-align: left;
 }

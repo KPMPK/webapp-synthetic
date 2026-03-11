@@ -242,11 +242,15 @@ function InspectorPage() {
                   <span className="country-label">{country}</span>
                   <button
                     type="button"
-                    className={`country-toggle-btn ${isBlocked ? 'blocked' : 'allowed'}`}
+                    className={`country-slide-toggle ${isBlocked ? 'blocked' : 'allowed'}`}
                     onClick={() => setCountryPolicy(country, !isBlocked)}
                     aria-pressed={isBlocked}
+                    aria-label={`${country} is ${isBlocked ? 'blocked' : 'allowed'}`}
                   >
-                    {isBlocked ? 'Blocked' : 'Allowed'}
+                    <span className="toggle-track">
+                      <span className="toggle-thumb" />
+                    </span>
+                    <span className="toggle-text">{isBlocked ? 'Blocked' : 'Allowed'}</span>
                   </button>
                 </div>
               );
