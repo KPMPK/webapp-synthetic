@@ -293,3 +293,45 @@ pre {
   border-bottom: 0;
   padding-bottom: 0;
 }
+
+
+.country-policy-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.country-policy-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.country-policy-card p {
+  margin: 0.3rem 0 0.8rem;
+  color: #94a3b8;
+}
+
+.country-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.country-btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+}
+
+.country-btn.allowed {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+}
+
+.country-btn.blocked {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+.empty-inline {
+  color: #94a3b8;
+}

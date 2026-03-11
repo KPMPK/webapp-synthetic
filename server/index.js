@@ -9,9 +9,9 @@ import geoip from 'geoip-lite';
 
 const app = express();
 const port = process.env.PORT || 8443;
-const blockedIpsEnv = process.env.BLOCKED_IPS || '';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const blockedCountrySet = new Set();
 
 app.set('trust proxy', true);
 app.use(cors());
@@ -50,26 +50,6 @@ function normalizeIp(ipValue) {
   return firstIp;
 }
 
-function getForwardedIpList(forwardedForHeader) {
-  if (!forwardedForHeader || typeof forwardedForHeader !== 'string') {
-    return [];
-  }
-
-  return forwardedForHeader
-    .split(',')
-    .map((ip) => normalizeIp(ip))
-    .filter(Boolean);
-}
-
-function getBlockedIpSet(rawBlockedIps) {
-  return new Set(
-    rawBlockedIps
-      .split(',')
-      .map((ip) => normalizeIp(ip))
-      .filter(Boolean)
-  );
-}
-
 function getGeoByIp(ipValue) {
   const ip = normalizeIp(ipValue);
   if (!ip) {
@@ -98,28 +78,75 @@ function getGeoByIp(ipValue) {
   };
 }
 
-const blockedIpSet = getBlockedIpSet(blockedIpsEnv);
+function normalizeCountryCode(country) {
+  if (!country || typeof country !== 'string') {
+    return null;
+  }
+  const code = country.trim().toUpperCase();
+  return code.length === 2 ? code : null;
+}
+
+function getSourceGeo(req) {
+  const forwardedFor = req.headers['x-forwarded-for'] || null;
+  const forwardedGeo = getGeoByIp(forwardedFor);
+  const ipGeo = getGeoByIp(req.ip);
+
+  return {
+    forwardedFor,
+    forwardedGeo,
+    ipGeo,
+    sourceGeo: forwardedGeo || ipGeo
+  };
+}
+
+function emitCountryPolicyUpdate() {
+  io.emit('country-policy-updated', {
+    blockedCountries: Array.from(blockedCountrySet)
+  });
+}
+
+app.get('/api/block-countries', (req, res) => {
+  res.json({ blockedCountries: Array.from(blockedCountrySet) });
+});
+
+app.post('/api/block-countries', (req, res) => {
+  const countryCode = normalizeCountryCode(req.body?.countryCode);
+  const shouldBlock = Boolean(req.body?.blocked);
+
+  if (!countryCode) {
+    return res.status(400).json({ error: 'countryCode must be a 2-letter code' });
+  }
+
+  if (shouldBlock) {
+    blockedCountrySet.add(countryCode);
+  } else {
+    blockedCountrySet.delete(countryCode);
+  }
+
+  emitCountryPolicyUpdate();
+
+  return res.json({ blockedCountries: Array.from(blockedCountrySet) });
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
-  const forwardedFor = req.headers['x-forwarded-for'] || null;
-  const normalizedIp = normalizeIp(req.ip);
-  const forwardedIps = getForwardedIpList(forwardedFor);
-  const blockedSourceIp = [normalizedIp, ...forwardedIps].find((ip) => blockedIpSet.has(ip)) || null;
+  const { forwardedFor, forwardedGeo, ipGeo, sourceGeo } = getSourceGeo(req);
+  const sourceCountry = normalizeCountryCode(sourceGeo?.country);
+  const blockedSourceCountry = sourceCountry && blockedCountrySet.has(sourceCountry) ? sourceCountry : null;
 
   const reqSnapshot = {
     method: req.method,
     path: req.originalUrl,
     httpVersion: req.httpVersion,
     ip: req.ip,
-    ipGeo: getGeoByIp(req.ip),
+    ipGeo,
     forwardedFor,
-    forwardedForGeo: getGeoByIp(forwardedFor),
+    forwardedForGeo: forwardedGeo,
     headers: req.headers,
     query: req.query,
     cookies: req.cookies,
     body: safeBody(req.body),
-    blockedSourceIp
+    blockedSourceCountry
   };
 
   let responseBody;
@@ -143,10 +170,11 @@ app.use((req, res, next) => {
     });
   });
 
-  if (blockedSourceIp) {
+  const isCountryPolicyEndpoint = req.path.startsWith('/api/block-countries');
+  if (blockedSourceCountry && !isCountryPolicyEndpoint) {
     return res.status(403).json({
-      error: 'Request denied by IP policy',
-      blockedSourceIp
+      error: 'Request denied by country policy',
+      blockedSourceCountry
     });
   }
 
@@ -182,9 +210,5 @@ app.get('*', (req, res) => {
 
 server.listen(port, '0.0.0.0', () => {
   console.log(`HTTP inspector app running on port ${port}`);
-  console.log(
-    blockedIpSet.size > 0
-      ? `Blocked IP policy is active for: ${Array.from(blockedIpSet).join(', ')}`
-      : 'Blocked IP policy is not set (BLOCKED_IPS is empty).'
-  );
+  console.log('Country blocking is managed from /status UI.');
 });

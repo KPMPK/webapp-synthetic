@@ -8,6 +8,10 @@ function resolveCity(event) {
   return event.request?.forwardedForGeo?.city || event.request?.ipGeo?.city || 'Unknown';
 }
 
+function resolveCountry(event) {
+  return event.request?.forwardedForGeo?.country || event.request?.ipGeo?.country || null;
+}
+
 function EcomMockPage() {
   const products = [
     {
@@ -96,17 +100,42 @@ function EcomMockPage() {
 function InspectorPage() {
   const [events, setEvents] = useState([]);
   const [totalCaptured, setTotalCaptured] = useState(0);
+  const [blockedCountries, setBlockedCountries] = useState([]);
 
   useEffect(() => {
+    fetch('/api/block-countries')
+      .then((res) => res.json())
+      .then((data) => setBlockedCountries(data.blockedCountries || []))
+      .catch(() => setBlockedCountries([]));
+
     socket.on('http-event', (event) => {
       setTotalCaptured((prev) => prev + 1);
       setEvents((prev) => [event, ...prev].slice(0, RECENT_EVENTS_LIMIT));
     });
 
+    socket.on('country-policy-updated', (payload) => {
+      setBlockedCountries(payload.blockedCountries || []);
+    });
+
     return () => {
       socket.off('http-event');
+      socket.off('country-policy-updated');
     };
   }, []);
+
+  const toggleCountryBlock = async (countryCode) => {
+    const blocked = !blockedCountries.includes(countryCode);
+    const res = await fetch('/api/block-countries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ countryCode, blocked })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setBlockedCountries(data.blockedCountries || []);
+    }
+  };
 
   const stats = useMemo(() => {
     const byStatus = events.reduce((acc, e) => {
@@ -120,11 +149,24 @@ function InspectorPage() {
       return acc;
     }, {});
 
+    const byCountry = events.reduce((acc, event) => {
+      const country = resolveCountry(event);
+      if (!country) {
+        return acc;
+      }
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {});
+
     const topCities = Object.entries(byCity)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8);
 
-    return { byStatus, topCities };
+    const topCountries = Object.entries(byCountry)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    return { byStatus, topCities, topCountries };
   }, [events]);
 
   return (
@@ -169,6 +211,30 @@ function InspectorPage() {
                 </li>
               ))}
             </ul>
+          )}
+        </div>
+      </section>
+
+      <section className="country-policy-card">
+        <h2>Country Block Policy (from GUI)</h2>
+        <p>กดปุ่มเพื่อ block/unblock ประเทศจากข้อมูลที่ตรวจพบล่าสุด</p>
+        <div className="country-buttons">
+          {stats.topCountries.length === 0 ? (
+            <span className="empty-inline">No country data yet</span>
+          ) : (
+            stats.topCountries.map(([country, count]) => {
+              const isBlocked = blockedCountries.includes(country);
+              return (
+                <button
+                  key={country}
+                  type="button"
+                  className={`country-btn ${isBlocked ? 'blocked' : 'allowed'}`}
+                  onClick={() => toggleCountryBlock(country)}
+                >
+                  {country} ({count}) • {isBlocked ? 'Blocked' : 'Allowed'}
+                </button>
+              );
+            })
           )}
         </div>
       </section>
