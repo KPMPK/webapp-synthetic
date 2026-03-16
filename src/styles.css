@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color: #f1f5f9;
-  background: radial-gradient(circle at 20% 0%, #1e1b4b 0%, #020617 45%);
+  color: #0f172a;
+  background: #f8fafc;
 }
 
 * {
@@ -26,7 +26,7 @@ body {
 }
 
 .top-nav a {
-  color: #93c5fd;
+  color: #2563eb;
   text-decoration: none;
 }
 
@@ -37,15 +37,15 @@ body {
 
 .brand {
   letter-spacing: 0.08em;
-  color: #facc15;
+  color: #1d4ed8;
 }
 
 .shop-hero {
-  background: linear-gradient(135deg, rgba(76, 29, 149, 0.7), rgba(30, 64, 175, 0.45));
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: linear-gradient(135deg, #ffffff, #eef2ff);
+  border: 1px solid #dbeafe;
   border-radius: 1rem;
   padding: 1.4rem;
-  box-shadow: 0 12px 40px rgba(2, 6, 23, 0.5);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
 }
 
 .hero-grid {
@@ -57,9 +57,9 @@ body {
 
 .pill {
   display: inline-block;
-  background: rgba(250, 204, 21, 0.2);
-  color: #fde68a;
-  border: 1px solid rgba(250, 204, 21, 0.5);
+  background: #e0e7ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
   padding: 0.25rem 0.55rem;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -72,7 +72,7 @@ body {
 
 .shop-hero p,
 .header p {
-  color: #cbd5e1;
+  color: #334155;
 }
 
 .cta-row {
@@ -82,8 +82,8 @@ body {
 }
 
 .hero-side-card {
-  background: rgba(15, 23, 42, 0.72);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.8rem;
   padding: 1rem;
   backdrop-filter: blur(3px);
@@ -97,12 +97,12 @@ body {
 .hero-side-card strong {
   display: block;
   margin: 0.35rem 0;
-  color: #facc15;
+  color: #1d4ed8;
   font-size: 1.2rem;
 }
 
 .hero-side-card small {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .category-row {
@@ -113,8 +113,8 @@ body {
 }
 
 .category-chip {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
   font-size: 0.85rem;
@@ -127,8 +127,8 @@ body {
 }
 
 .product-card {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.96));
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.75rem;
 }
@@ -149,12 +149,12 @@ body {
 }
 
 .tag {
-  color: #93c5fd;
+  color: #2563eb;
   font-size: 0.75rem;
 }
 
 .rating {
-  color: #facc15;
+  color: #1d4ed8;
   font-size: 0.85rem;
 }
 
@@ -163,7 +163,7 @@ body {
 }
 
 .price small {
-  color: #94a3b8;
+  color: #64748b;
   text-decoration: line-through;
   font-weight: 400;
   margin-left: 0.3rem;
@@ -171,7 +171,7 @@ body {
 
 button {
   border: none;
-  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
   color: white;
   padding: 0.45rem 0.75rem;
   border-radius: 0.4rem;
@@ -194,15 +194,15 @@ button {
 }
 
 .stat-card {
-  background: #0f172a;
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.75rem;
 }
 
 .label {
   display: block;
-  color: #94a3b8;
+  color: #64748b;
   margin-bottom: 0.4rem;
 }
 
@@ -212,8 +212,8 @@ button {
 }
 
 .event-card {
-  background: #0f172a;
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.75rem;
 }
@@ -243,13 +243,13 @@ button {
 
 .duration,
 .time {
-  color: #94a3b8;
+  color: #64748b;
   font-size: 0.9rem;
 }
 
 details {
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 0.4rem;
   margin-top: 0.5rem;
   padding: 0.4rem;
@@ -266,10 +266,10 @@ pre {
 }
 
 .empty {
-  border: 1px dashed #334155;
+  border: 1px dashed #cbd5e1;
   border-radius: 0.5rem;
   padding: 1rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .city-list {
@@ -284,7 +284,7 @@ pre {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #cbd5e1;
+  color: #334155;
   border-bottom: 1px solid #1e293b;
   padding-bottom: 0.2rem;
 }
@@ -296,8 +296,8 @@ pre {
 
 
 .country-policy-card {
-  background: #0f172a;
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.9rem;
   margin-bottom: 1rem;
@@ -310,7 +310,7 @@ pre {
 
 .country-policy-card p {
   margin: 0.3rem 0 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 
@@ -325,7 +325,7 @@ pre {
   align-items: center;
   justify-content: space-between;
   gap: 0.6rem;
-  border: 1px solid #1e293b;
+  border: 1px solid #e2e8f0;
   border-radius: 0.55rem;
   padding: 0.45rem 0.55rem;
 }
@@ -335,7 +335,7 @@ pre {
 }
 
 .empty-inline {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 
@@ -347,7 +347,7 @@ pre {
   font-size: 0.82rem;
   padding: 0.3rem 0.5rem;
   background: transparent;
-  border: 1px solid #334155;
+  border: 1px solid #e2e8f0;
   border-radius: 999px;
 }
 
@@ -355,7 +355,7 @@ pre {
   width: 42px;
   height: 24px;
   border-radius: 999px;
-  background: #334155;
+  background: #cbd5e1;
   position: relative;
   transition: background 0.2s ease;
 }
@@ -364,7 +364,7 @@ pre {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: #ffffff;
   position: absolute;
   top: 3px;
   left: 3px;
@@ -384,7 +384,7 @@ pre {
 }
 
 .toggle-text {
-  color: #e2e8f0;
+  color: #334155;
   min-width: 56px;
   text-align: left;
 }
@@ -395,5 +395,10 @@ pre {
 }
 
 .country-slide-toggle.disabled .toggle-track {
-  background: #64748b;
+  background: #cbd5e1;
+}
+
+
+.top-nav a:hover {
+  text-decoration: underline;
 }
