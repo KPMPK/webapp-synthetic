@@ -402,3 +402,30 @@ pre {
 .top-nav a:hover {
   text-decoration: underline;
 }
+
+
+.status-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.left-panel {
+  position: sticky;
+  top: 1rem;
+}
+
+.right-panel {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .status-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .left-panel {
+    position: static;
+  }
+}

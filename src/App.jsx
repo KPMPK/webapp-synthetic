@@ -235,71 +235,73 @@ function InspectorPage() {
         </div>
       </section>
 
-      <section className="country-policy-card">
-        <h2>Country Block Policy (GUI)</h2>
-        <p>Use the slide toggle to allow or block country access from this page.</p>
-        <div className="country-policy-grid">
-          {policyCountries.length === 0 ? (
-            <span className="empty-inline">No country data yet</span>
-          ) : (
-            policyCountries.map((country) => {
-              const isBlocked = blockedCountries.includes(country);
-              const isRequesterCountry = requesterCountry === country;
-              const cannotBlockSelf = isRequesterCountry && !isBlocked;
-              return (
-                <div key={country} className="country-policy-row">
-                  <span className="country-label">
-                    {country}
-                    {isRequesterCountry ? ' (You)' : ''}
-                  </span>
-                  <button
-                    type="button"
-                    className={`country-slide-toggle ${isBlocked ? 'blocked' : 'allowed'} ${cannotBlockSelf ? 'disabled' : ''}`}
-                    onClick={() => setCountryPolicy(country, !isBlocked)}
-                    aria-pressed={isBlocked}
-                    aria-label={`${country} is ${isBlocked ? 'blocked' : 'allowed'}`}
-                    disabled={cannotBlockSelf}
-                    title={cannotBlockSelf ? 'You cannot block your own requester country.' : ''}
-                  >
-                    <span className="toggle-track">
-                      <span className="toggle-thumb" />
+      <div className="status-layout">
+        <aside className="country-policy-card left-panel">
+          <h2>Country Block Policy (GUI)</h2>
+          <p>Use the slide toggle to allow or block country access from this page.</p>
+          <div className="country-policy-grid">
+            {policyCountries.length === 0 ? (
+              <span className="empty-inline">No country data yet</span>
+            ) : (
+              policyCountries.map((country) => {
+                const isBlocked = blockedCountries.includes(country);
+                const isRequesterCountry = requesterCountry === country;
+                const cannotBlockSelf = isRequesterCountry && !isBlocked;
+                return (
+                  <div key={country} className="country-policy-row">
+                    <span className="country-label">
+                      {country}
+                      {isRequesterCountry ? ' (You)' : ''}
                     </span>
-                    <span className="toggle-text">{isBlocked ? 'Blocked' : 'Allowed'}</span>
-                  </button>
+                    <button
+                      type="button"
+                      className={`country-slide-toggle ${isBlocked ? 'blocked' : 'allowed'} ${cannotBlockSelf ? 'disabled' : ''}`}
+                      onClick={() => setCountryPolicy(country, !isBlocked)}
+                      aria-pressed={isBlocked}
+                      aria-label={`${country} is ${isBlocked ? 'blocked' : 'allowed'}`}
+                      disabled={cannotBlockSelf}
+                      title={cannotBlockSelf ? 'You cannot block your own requester country.' : ''}
+                    >
+                      <span className="toggle-track">
+                        <span className="toggle-thumb" />
+                      </span>
+                      <span className="toggle-text">{isBlocked ? 'Blocked' : 'Allowed'}</span>
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </aside>
+
+        <section className="list right-panel">
+          {events.length === 0 ? (
+            <div className="empty">No HTTP traffic captured yet. Try hitting any route on this app.</div>
+          ) : (
+            events.map((event) => (
+              <article className="event-card" key={event.id}>
+                <div className="event-head">
+                  <span className="method">{event.request.method}</span>
+                  <span className="path">{event.request.path}</span>
+                  <span className="status">{event.response.statusCode}</span>
+                  <span className="duration">{event.response.durationMs} ms</span>
+                  <span className="time">{new Date(event.timestamp).toLocaleTimeString()}</span>
                 </div>
-              );
-            })
+
+                <details open>
+                  <summary>Request</summary>
+                  <pre>{JSON.stringify(event.request, null, 2)}</pre>
+                </details>
+
+                <details>
+                  <summary>Response</summary>
+                  <pre>{JSON.stringify(event.response, null, 2)}</pre>
+                </details>
+              </article>
+            ))
           )}
-        </div>
-      </section>
-
-      <section className="list">
-        {events.length === 0 ? (
-          <div className="empty">No HTTP traffic captured yet. Try hitting any route on this app.</div>
-        ) : (
-          events.map((event) => (
-            <article className="event-card" key={event.id}>
-              <div className="event-head">
-                <span className="method">{event.request.method}</span>
-                <span className="path">{event.request.path}</span>
-                <span className="status">{event.response.statusCode}</span>
-                <span className="duration">{event.response.durationMs} ms</span>
-                <span className="time">{new Date(event.timestamp).toLocaleTimeString()}</span>
-              </div>
-
-              <details open>
-                <summary>Request</summary>
-                <pre>{JSON.stringify(event.request, null, 2)}</pre>
-              </details>
-
-              <details>
-                <summary>Response</summary>
-                <pre>{JSON.stringify(event.response, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        )}
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
